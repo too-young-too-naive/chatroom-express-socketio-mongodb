@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+  <head>
+    <title>chat room</title>
+    <link rel="stylesheet" href="/stylesheets/style.css"/>
+  </head>
+  <body>
+	<div class="windows">
+
+		<div class="name">
+
+		 <p id="chatRoomName">Chat Room</p> 
+
+		</div>
+
+
+		<div id="exit">
+			<input id="exitbtn" type="button" value="EXIT"/>
+		</div>
+
+        <!-- This is for show online people -->
+    	<div class="onlinePeople">
+			<p id="onlinePeopleTitle">Currently online user:</p>
+			<ul id="onlinelist"></ul>
+
+		<div class="onlinePeopleShow"></div>
+
+		</div>
+
+
+        <!-- this is for historyMessage screen part -->
+		<div class="historyMessage">
+			<ul id="historymsg"></ul>
+		</div>
+
+
+		<!-- this is for input part -->
+		<div class="inputMessage">
+			<textarea id="textInput" rows="6" cols="68" placeholder="enter to send"></textarea>
+
+			<input id="sendButton" type="button" value="SEND">
+		</div>
+
+
+
+		
+	</div>
+
+	<div id="loginPage">
+		<div id="loginPageHello">
+			<p id="loginHello">Use your name to login in the chat room.</p>
+		<!-- </div>
+
+		<div class="inputLoginInfo"> -->
+			<input id="loginname" type="text" name="Name">
+			<input id="loginbutton" type="button" value="LOGIN">
+		</div>
+
+		<div id="connectInformation">
+			<p id="connectInfo">Connecting to server...</p>
+			<!-- <p id="connected">Server connected.</p> -->
+		</div>
+		<div id="existed_name">
+			<p>This login name has been taken, please try another one.</p>
+		</div>
+	</div>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript">
+        var username = null;
+        var socket = io();
+       
+
+
+       socket.on('isconnected',function(){
+       	$('#connectInformation').css("display","none");
+       	$('#loginPageHello').css("display","block");
+       });
+
+
+
+       $('#loginbutton').click(function(e){
+        e.preventDefault();
+        username = $("#loginname").val();
+        socket.emit('user_name', $('#loginname').val());
+          $('#loginname').val('');
+          $('#loginPage').css("display","none");
+        });
+
+       socket.on('existedname',function(){
+       	$('#existed_name').css("display","block");
+       	$('#loginPage').css("display","block");
+       });
+
+       $('#sendButton').click(function(e){
+        e.preventDefault();
+        socket.emit('chat_message', $('#textInput').val());
+          $('#textInput').val('');
+        });
+       // $('#clear').click(function(e){
+       //  e.preventDefault();
+       //  $('#messages').empty();
+       // });
+        socket.on('chat_message',function(msg_name,msg){
+        	 var mydate=new Date();
+          // $('#historymsg').append($('<li>').text(msg_name+'('+mydate.getHours()+':'+mydate.getMinutes()+':'+mydate.getSeconds()+')'+':'+msg));
+          $('#historymsg').append($('<li>').text(msg_name+'('+mydate.toLocaleString( )+')'+':'+msg));
+        });
+
+        socket.on('user_list',function(name){
+          $('#onlinelist').append($('<li>').text(name));
+        });
+
+        socket.on('remove_user',function(name){
+          $('#onlinelist').empty();
+          // $('#onlinelist').append($('<li>').text('Users:'));
+          socket.emit('get_user');
+        });
+
+        $('exitbtn').click(function(){
+        	window.close();
+        });
+
+
+
+    </script>
+  </body>
+</html>

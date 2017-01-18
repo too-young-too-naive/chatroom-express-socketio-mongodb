@@ -1,0 +1,188 @@
+#!/usr/bin/nodejs
+var debug = require('debug')('my-application');
+var app = require('../app');
+
+app.set('port', process.env.PORT || 8080);
+
+var server = app.listen(app.get('port'), function() {
+  debug('Express server listening on port ' + server.address().port);
+});
+
+
+
+var io = require('socket.io')(server);
+var mongodb = require('mongodb');
+var mongodbServer = new mongodb.Server('localhost', 27017, { auto_reconnect: true});
+var db = new mongodb.Db('mydb', mongodbServer);
+
+
+var storeMessage = function(name,data){
+	console.log('message stored');
+	db.collection('cappedMessageCollection', function(err, collection) {
+        /* Insert a data */
+        collection.insert({
+        	"name":name, 
+        	"data":data,
+        });
+    }); 
+};
+
+
+db.open();
+io.on('connection', function(socket){
+    var signin=false;
+    socket.emit('isconnected');
+	console.log('a user connected');
+	var client_name=null;
+	var time_start=Date.parse(new Date());
+	
+                     db.collection('usersCollection', function(err, collection) {
+			            collection.find({}).toArray(function(err,users){
+			                
+				                       users.forEach(function(user){
+					                         socket.emit('user_list',user.name);
+				                        });
+			              
+
+			             });
+	                 }); 
+
+		 
+    socket.on('user_name', function(user_name){
+  		console.log('name received');
+  		console.log(user_name);
+  		if (client_name!=null)
+  		{
+  			db.collection('usersCollection', function(err, collection) {
+			    /* Delete a data */
+			    collection.remove({
+			        "name":client_name,
+			    });
+			    }); 
+  		}
+  		
+  		
+		db.collection('usersCollection', function(err, collection) {
+	        /* Insert a data */
+	        /*
+	        collection.insert({
+	            "name":user_name
+	        }, function(err, data) {
+	            if (!data) {
+	                client_name=user_name;
+	                io.emit('user_list',user_name);
+					console.log('CN received');
+
+					
+	            } else {
+	                console.log('name existed!');
+	                socket.emit('existedname');
+	            }
+
+	        	});
+	        	*/
+
+	        	collection.findOne({"name":user_name}, function(err,user){
+	        	if(user){
+	        	     console.log('This name has already existed!');
+	        	     socket.emit('existedname');
+	        	}
+	        	else{
+	        	     signin=true;
+	        	     client_name=user_name;
+	        	     io.emit('user_list',user_name);
+	        	     console.log('CN received');
+	        	     collection.insert({"name":user_name});
+	                 db.collection('cappedMessageCollection', function(err, collection) {
+			             collection.find({}).toArray(function(err,messages){
+				            messages.forEach(function(message){
+					                   if (message.name!=client_name)
+						               {
+						                     if(signin){
+						                         socket.emit('chat_message',message.name,message.data);
+						                     }
+							
+						                }
+
+				             });
+			            });
+	                 });	        	     
+	        	}
+	        	});
+
+
+	       }); 
+		
+    }); 
+
+
+
+
+
+
+    socket.on('chat_message', function(msg){
+ 		io.emit('chat_message',client_name,msg);
+ 		storeMessage(client_name,msg);
+ 		
+	    db.collection('mycoll', function(err, collection) {
+	        /* Insert a data */
+	        collection.insert({
+	            "message": msg,
+	            "username": client_name,
+	            "time": Date.parse(new Date()),
+	        }, function(err, data) {
+	            if (data) {
+	                console.log('Successfully Insert');
+	            } else {
+	                console.log('Failed to Insert');
+	            }
+
+	        });
+	    }); 
+	   
+ 	}); 
+
+  socket.on('disconnect',function(){
+  	console.log('user disconnect');
+  	io.emit("remove_user",client_name);
+  	db.collection('usersCollection', function(err, collection) {
+        /* Delete a data */
+        collection.remove({
+            "name":client_name,
+        });
+       }); 
+  	db.collection('mycoll', function(err, collection) {
+  		collection.insert({
+            "username": client_name,
+            "timestart": time_start,
+            "timeend": Date.parse(new Date()),
+        }, function(err, data) {
+            if (data) {
+                console.log('Successfully Insert');
+            } else {
+                console.log('Failed to Insert');
+            }
+        });
+  	 });
+/*
+  	 db.collection('usersCollection',function(err,collection){
+  	    collection.remove({});
+  	 });
+
+  	 db.collection('cappedMessageCollection',function(err,collection){
+  	    collection.remove({});
+  	 });
+*/
+
+  });
+  socket.on('get_user',function(){
+  	db.collection('usersCollection', function(err, collection) {
+			collection.find({}).toArray(function(err,users){
+				users.forEach(function(user){
+					socket.emit('user_list',user.name);
+					});
+			});
+	}); 
+  });
+
+});

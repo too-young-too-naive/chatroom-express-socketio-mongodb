@@ -1,0 +1,116 @@
+body{
+      margin: 0px;
+      background-color: #efefef;
+      font-family: sans-serif;
+}
+
+div.windows{
+      width: 800px;
+      height: 700px;
+      padding: 10px;
+      margin: auto;
+      background-color: #ddd;
+}
+
+div.name{
+      float: left;
+      width: 80%;
+      height: 20%;
+      /*border: solid;*/
+
+}
+
+#chatRoomName{
+      font-size: 40px;
+      font-weight: bold;
+      padding: 5px;
+}
+
+div.historyMessage{
+      width: 60%;
+      height:50%;
+      float: left;
+      background-color: white;
+      overflow: auto;
+      padding: 3px;
+      /*border: solid;*/
+      
+}
+
+div.inputMessage{
+      width: 60%;
+      height: 25%;
+      float: left;
+      margin-top: 10px;
+      /*border: solid;*/
+}
+
+/*div.textInput{
+      padding-top: 10px;
+}*/
+
+#textInput{
+      /*padding-top: 10px;*/
+      margin-bottom: 10px;
+      width: 100%;
+      height: 70%;
+}
+
+#sendButton{
+      float: right;
+}
+
+div.onlinePeople{
+      float: right;
+      width: 37%;
+      height: 75%;
+      margin: auto;
+      padding: 5px;
+      /*border: solid;*/
+      background-color: white;
+}
+
+#exit{
+	float: right;
+	
+}
+
+#onlinePeopleTitle{
+
+}
+
+#loginPage{
+      position: fixed;
+      top: 0px;
+      right: 0px;
+      bottom: 0px;
+      left: 0px;
+      background-color: rgba(5,5,5,.6);
+      text-align: center;
+      color: black;
+      display: block;
+      padding-top: 400px;
+
+}
+
+#loginPageHello{
+	display: none;
+}
+
+#connectInformation{
+      /*font-family: sans-serif;*/
+      /*font-size: 16em;*/
+      display: block;
+}
+
+#connectInfo{
+      font-family: sans-serif;
+      font-size: 30px;
+}
+#existed_name{
+	font-family: :sans-serif;
+	display: none;
+}
+footer{
+      text-align: center;
+}
