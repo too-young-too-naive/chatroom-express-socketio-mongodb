@@ -1,0 +1,10 @@
+//First, go to your mongodb`s path to open it
+$./mongod
+
+//Then go to src
+$ npm install socket.io
+$ npm install mongodb
+$ npm install      
+$ npm start
+
+//Finally, open Firefox to try this little web app :)
