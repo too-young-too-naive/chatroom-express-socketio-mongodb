@@ -15,7 +15,7 @@
 
 
 		<div id="exit">
-			<input id="exitbtn" type="button" value="EXIT"/>
+			<input id="exitbtn" type="button" value="EXIT" onclick="location.reload()"/>
 		</div>
 
         <!-- This is for show online people -->
@@ -97,18 +97,19 @@
         socket.emit('chat_message', $('#textInput').val());
           $('#textInput').val('');
         });
-       // $('#clear').click(function(e){
-       //  e.preventDefault();
-       //  $('#messages').empty();
-       // });
-        socket.on('chat_message',function(msg_name,msg){
+
+       // var mytime=new Date();
+       // var savetime=mytime.toLocaleString();
+
+        socket.on('chat_message',function(msg_name,msg,msgtime){
         	 var mydate=new Date();
           // $('#historymsg').append($('<li>').text(msg_name+'('+mydate.getHours()+':'+mydate.getMinutes()+':'+mydate.getSeconds()+')'+':'+msg));
-          $('#historymsg').append($('<li>').text(msg_name+'('+mydate.toLocaleString( )+')'+':'+msg));
+          $('#historymsg').append($('<li class="hismsg">').text(msg_name+'('+msgtime+')'+':'+'\r'+msg));
+          // $('#historymsg').append($('<li class="hismsg">').append($('<p id="from">')));
         });
 
         socket.on('user_list',function(name){
-          $('#onlinelist').append($('<li>').text(name));
+          $('#onlinelist').append($('<li class="userlist">').text(name));
         });
 
         socket.on('remove_user',function(name){
@@ -117,9 +118,9 @@
           socket.emit('get_user');
         });
 
-        $('exitbtn').click(function(){
-        	window.close();
-        });
+        // $('exitbtn').click(function(){
+        // 	window.close();
+        // });
 
 
 

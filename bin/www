@@ -16,13 +16,14 @@ var mongodbServer = new mongodb.Server('localhost', 27017, { auto_reconnect: tru
 var db = new mongodb.Db('mydb', mongodbServer);
 
 
-var storeMessage = function(name,data){
+var storeMessage = function(name,data,time){
 	console.log('message stored');
 	db.collection('cappedMessageCollection', function(err, collection) {
         /* Insert a data */
         collection.insert({
         	"name":name, 
         	"data":data,
+        	"time":time,
         });
     }); 
 };
@@ -98,9 +99,9 @@ io.on('connection', function(socket){
 				            messages.forEach(function(message){
 					                   if (message.name!=client_name)
 						               {
-						                     if(signin){
-						                         socket.emit('chat_message',message.name,message.data);
-						                     }
+						                     
+						                         socket.emit('chat_message',message.name,message.data,message.time);
+						                     
 							
 						                }
 
@@ -119,17 +120,19 @@ io.on('connection', function(socket){
 
 
 
-
+    
     socket.on('chat_message', function(msg){
- 		io.emit('chat_message',client_name,msg);
- 		storeMessage(client_name,msg);
+        var mytime=new Date();
+        var savetime=mytime.toLocaleString();
+ 		io.emit('chat_message',client_name,msg,savetime);
+ 		storeMessage(client_name,msg,savetime);////////////change
  		
 	    db.collection('mycoll', function(err, collection) {
 	        /* Insert a data */
 	        collection.insert({
 	            "message": msg,
 	            "username": client_name,
-	            "time": Date.parse(new Date()),
+	            "time": savetime
 	        }, function(err, data) {
 	            if (data) {
 	                console.log('Successfully Insert');
