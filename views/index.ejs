@@ -103,9 +103,14 @@
 
         socket.on('chat_message',function(msg_name,msg,msgtime){
         	 var mydate=new Date();
-          // $('#historymsg').append($('<li>').text(msg_name+'('+mydate.getHours()+':'+mydate.getMinutes()+':'+mydate.getSeconds()+')'+':'+msg));
-          $('#historymsg').append($('<li class="hismsg">').text(msg_name+'('+msgtime+')'+':'+'\r'+msg));
+          //  var msgbox="<li id='msgboxstyle'><span id='span1' style='float:left;'></span> <span id='span2' style='float:right; clear:both;'></span> <span id='span3' style='float:left'></span></li> ";
+          // // $('#historymsg').append($('<li>').text(msg_name+'('+mydate.getHours()+':'+mydate.getMinutes()+':'+mydate.getSeconds()+')'+':'+msg));
+          $('#historymsg').append($('<li class="hismsg">').append("<span id='span1' style='width:200px;display:block;font-size:20px; float:left;'>"+msg_name+"</span><spanid='span2'style='float:right;display:block;clear:both;'>"+msgtime+"</span> <div id='span3' style='float:left;word-wrap:break-word; width:100%;clear:both;margin-top:10px;'>"+msg+"</div>"));
           // $('#historymsg').append($('<li class="hismsg">').append($('<p id="from">')));
+          // $('#historymsg').append(msgbox);
+          // $('#span1').html(msg_name);
+          // $('#span2').html(msgtime);
+          // $('#span3').html(msg);
         });
 
         socket.on('user_list',function(name){
